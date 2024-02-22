@@ -4,9 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-
+import android.content.Intent;
 import android.os.Bundle;
-
 import com.example.greenplate.R;
 import com.example.greenplate.views.mainFragments.IngredientFragment;
 import com.example.greenplate.views.mainFragments.InputMealFragment;
@@ -22,6 +21,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+      
+        // this code written by kabu to redirect to sign up page will be removed later (i think)
+      
+        // Create an Intent to start SignUpActivity
+        Intent intent = new Intent(this, SignUpActivity.class);
+        startActivity(intent);
+
+        // Optional: If you don't want users to return to MainActivity by pressing back,
+        // call finish() after starting the activity
+        finish();
+      
+        // the following code is written by rachit
 
         replaceFragment(new InputMealFragment());
 
