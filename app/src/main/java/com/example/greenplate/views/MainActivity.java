@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
       
         // Create an Intent to start SignUpActivity
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-            Intent intent = new Intent(MainActivity.this, SignUpActivity.class);
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
         } else {
             replaceFragment(new InputMealFragment());
