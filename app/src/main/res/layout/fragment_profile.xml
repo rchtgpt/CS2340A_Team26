@@ -29,7 +29,6 @@
                 android:id="@+id/userEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="rgupta432@gatech.edu"
                 android:hint="Email Address"/>
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -45,7 +44,6 @@
                 android:id="@+id/height"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="173"
                 android:hint="Height (in cm)"/>
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -60,7 +58,6 @@
                 android:id="@+id/weight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="140"
                 android:hint="Weight (in lbs)"/>
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -75,7 +72,6 @@
                 android:id="@+id/gender"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Male"
                 android:hint="Gender"/>
 
         </com.google.android.material.textfield.TextInputLayout>

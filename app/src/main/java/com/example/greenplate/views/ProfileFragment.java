@@ -24,8 +24,11 @@ import com.example.greenplate.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class ProfileFragment extends Fragment {
 
@@ -56,6 +59,71 @@ public class ProfileFragment extends Fragment {
         dbUserHeight = FirebaseDatabase.getInstance("https://greenplate-d518c-default-rtdb.firebaseio.com/").getReference().child("users").child(user_id).child("height");
         dbUserWeight = FirebaseDatabase.getInstance("https://greenplate-d518c-default-rtdb.firebaseio.com/").getReference().child("users").child(user_id).child("weight");
         dbUserGender = FirebaseDatabase.getInstance("https://greenplate-d518c-default-rtdb.firebaseio.com/").getReference().child("users").child(user_id).child("gender");
+
+        // Add a ValueEventListener to retrieve the value of dbUserEmail
+        dbUserEmail.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String userEmail = dataSnapshot.getValue(String.class);
+                    uEmail.setText(userEmail);
+                    // Now you have the value of dbUserEmail as a string in userEmail variable
+                    // You can use it as needed
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("ProfileFragment", "Failed to read user email value.", databaseError.toException());
+            }
+        });
+
+        dbUserHeight.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String userHeight = dataSnapshot.getValue(String.class);
+                    uHeight.setText(userHeight);
+                    // Now you have the value of dbUserEmail as a string in userEmail variable
+                    // You can use it as needed
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("ProfileFragment", "Failed to read user email value.", databaseError.toException());
+            }
+        });
+
+        dbUserWeight.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String userWeight = dataSnapshot.getValue(String.class);
+                    uWeight.setText(userWeight);
+                    // Now you have the value of dbUserEmail as a string in userEmail variable
+                    // You can use it as needed
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("ProfileFragment", "Failed to read user email value.", databaseError.toException());
+            }
+        });
+
+        dbUserGender.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String userGender = dataSnapshot.getValue(String.class);
+                    uGender.setText(userGender);
+                    // Now you have the value of dbUserEmail as a string in userEmail variable
+                    // You can use it as needed
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("ProfileFragment", "Failed to read user email value.", databaseError.toException());
+            }
+        });
 
         Button saveInfoBtn = v.findViewById(R.id.saveInfoBtn);
 
