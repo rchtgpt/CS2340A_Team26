@@ -66,7 +66,7 @@ public class SignUpActivity extends AppCompatActivity {
                 String password = String.valueOf(editTextPassword.getText());
                 String firstName = String.valueOf(editTextFirstName.getText()).trim();
                 String lastName = String.valueOf(editTextLastName.getText()).trim();
-                String height = "Enter your Height (in cms)";
+                String height = "Enter your Height (in inches)";
                 String weight = "Enter your Weight (in lbs)";
                 String gender = "Enter your Gender";
 

@@ -74,8 +74,6 @@ public class ProfileFragment extends Fragment {
                 if (dataSnapshot.exists()) {
                     String userFirstName = dataSnapshot.getValue(String.class);
                     uFirstName.setText(userFirstName);
-                    // Now you have the value of dbUserEmail as a string in userEmail variable
-                    // You can use it as needed
                 }
             }
             @Override
@@ -90,8 +88,6 @@ public class ProfileFragment extends Fragment {
                 if (dataSnapshot.exists()) {
                     String userFirstName = dataSnapshot.getValue(String.class);
                     uFirstName.setText(userFirstName);
-                    // Now you have the value of dbUserEmail as a string in userEmail variable
-                    // You can use it as needed
                 }
             }
             @Override
@@ -106,8 +102,6 @@ public class ProfileFragment extends Fragment {
                 if (dataSnapshot.exists()) {
                     String userLastName = dataSnapshot.getValue(String.class);
                     uLastName.setText(userLastName);
-                    // Now you have the value of dbUserEmail as a string in userEmail variable
-                    // You can use it as needed
                 }
             }
             @Override
@@ -123,8 +117,6 @@ public class ProfileFragment extends Fragment {
                 if (dataSnapshot.exists()) {
                     String userEmail = dataSnapshot.getValue(String.class);
                     uEmail.setText(userEmail);
-                    // Now you have the value of dbUserEmail as a string in userEmail variable
-                    // You can use it as needed
                 }
             }
             @Override
@@ -139,8 +131,6 @@ public class ProfileFragment extends Fragment {
                 if (dataSnapshot.exists()) {
                     String userHeight = dataSnapshot.getValue(String.class);
                     uHeight.setText(userHeight);
-                    // Now you have the value of dbUserEmail as a string in userEmail variable
-                    // You can use it as needed
                 }
             }
             @Override
@@ -155,8 +145,6 @@ public class ProfileFragment extends Fragment {
                 if (dataSnapshot.exists()) {
                     String userWeight = dataSnapshot.getValue(String.class);
                     uWeight.setText(userWeight);
-                    // Now you have the value of dbUserEmail as a string in userEmail variable
-                    // You can use it as needed
                 }
             }
             @Override
@@ -171,8 +159,6 @@ public class ProfileFragment extends Fragment {
                 if (dataSnapshot.exists()) {
                     String userGender = dataSnapshot.getValue(String.class);
                     uGender.setText(userGender);
-                    // Now you have the value of dbUserEmail as a string in userEmail variable
-                    // You can use it as needed
                 }
             }
             @Override
@@ -199,9 +185,11 @@ public class ProfileFragment extends Fragment {
                     Log.d("Profile Fragment", e.toString());
                 }
             });
+
             dbUserHeight.setValue(uHeight.getText().toString());
             dbUserWeight.setValue(uWeight.getText().toString());
             dbUserGender.setValue(uGender.getText().toString());
+            Toast.makeText(getActivity(), "Data updated!", Toast.LENGTH_LONG).show();
         });
 
         Button signOutBtn = v.findViewById(R.id.signOutBtn);

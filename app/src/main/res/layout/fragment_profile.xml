@@ -67,7 +67,7 @@
                 android:id="@+id/height"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Height (in cm)"/>
+                android:hint="Height (in inches)"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
