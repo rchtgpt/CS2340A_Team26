@@ -21,10 +21,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Map;
+
 public class InputMealFragment extends Fragment {
 
     private InputMealViewModel mViewModel;
     private TextView calorieGoalText;
+    private TextView dailyCalorieText;
     private DatabaseReference databaseReference;
     final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -39,14 +42,14 @@ public class InputMealFragment extends Fragment {
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
         calorieGoalText = view.findViewById(R.id.calorieGoalText);
+        dailyCalorieText = view.findViewById(R.id.dailyCalorieIntakeText);
 
         databaseReference.child("users").child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     String gender = String.valueOf(snapshot.child("gender").getValue());
-                    int age = 19;
-                            // Integer.valueOf(String.valueOf(snapshot.child("age").getValue()));
+                    int age = (Integer.valueOf(String.valueOf(snapshot.child("age").getValue())) != null) ? Integer.valueOf(String.valueOf(snapshot.child("age").getValue())) : 19;
                     int weight = Integer.valueOf(String.valueOf(snapshot.child("weight").getValue()));
                     int height = Integer.valueOf(String.valueOf(snapshot.child("height").getValue()));
 
@@ -59,8 +62,17 @@ public class InputMealFragment extends Fragment {
                     }
 
                     calorieGoalText.setText("Calculated Calorie Goal: " + bmr);
-                    Log.i("TAG", String.valueOf(snapshot.child("meals").getValue()));
+                    Map<String, Long> meals = (Map<String, Long>) snapshot.child("meals").getValue();
 
+                    if (meals != null) {
+                        long calorieIntake = 0;
+
+                        for (String key : meals.keySet()) {
+                            calorieIntake += meals.get(key);
+                        }
+
+                        dailyCalorieText.setText("Daily Calorie Intake: " + calorieIntake);
+                    }
                 }
             }
 
