@@ -1,6 +1,4 @@
-package com.example.greenplate.views;
-
-import static androidx.core.content.PackageManagerCompat.LOG_TAG;
+package com.anychart.greenplate.views;
 
 import androidx.lifecycle.ViewModelProvider;
 
@@ -16,11 +14,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.greenplate.viewmodels.ProfileViewModel;
+import com.anychart.greenplate.viewmodels.ProfileViewModel;
 import com.example.greenplate.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.material.textfield.TextInputEditText;

@@ -1,4 +1,4 @@
-package com.example.greenplate.views;
+package com.anychart.greenplate.views;
 
 import android.content.Intent;
 import android.os.Bundle;

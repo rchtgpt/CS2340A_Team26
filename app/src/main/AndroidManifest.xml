@@ -15,14 +15,14 @@
         android:theme="@style/Theme.GreenPlate"
         tools:targetApi="31">
         <activity
-            android:name=".views.LoginActivity"
+            android:name="com.anychart.greenplate.views.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".views.SignUpActivity"
+            android:name="com.anychart.greenplate.views.SignUpActivity"
             android:exported="true">
         </activity>
 
-        <activity android:name=".views.SplashActivity"
+        <activity android:name="com.anychart.greenplate.views.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,7 +31,7 @@
         </activity>
 
         <activity
-            android:name=".views.MainActivity"
+            android:name="com.anychart.greenplate.views.MainActivity"
             android:exported="true">
         </activity>
     </application>

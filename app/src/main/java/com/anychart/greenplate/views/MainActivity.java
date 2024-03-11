@@ -1,4 +1,4 @@
-package com.example.greenplate.views;
+package com.anychart.greenplate.views;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -7,12 +7,20 @@ import androidx.fragment.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import com.example.greenplate.R;
-import com.example.greenplate.views.mainFragments.IngredientFragment;
-import com.example.greenplate.views.mainFragments.InputMealFragment;
-import com.example.greenplate.views.mainFragments.RecipeFragment;
-import com.example.greenplate.views.mainFragments.ShoppingListFragment;
+import com.anychart.greenplate.views.mainFragments.IngredientFragment;
+import com.anychart.greenplate.views.mainFragments.InputMealFragment;
+import com.anychart.greenplate.views.mainFragments.RecipeFragment;
+import com.anychart.greenplate.views.mainFragments.ShoppingListFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.anychart.AnyChart;
+import com.anychart.AnyChartView;
+import com.anychart.chart.common.dataentry.ValueDataEntry;
+import com.anychart.charts.Pie;
+import com.anychart.chart.common.dataentry.DataEntry;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
