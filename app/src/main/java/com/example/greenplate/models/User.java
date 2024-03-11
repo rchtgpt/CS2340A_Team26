@@ -12,7 +12,7 @@ public class User {
     private String weight;
     private String gender;
 
-    public User(String firstName, String lastName, String email) {
+    public User(String firstName, String lastName, String email, String height, String weight, String gender) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -75,4 +75,5 @@ public class User {
     public String getGender() {return gender;}
 
     public void setGender(String gender) {this.gender = gender;}
+
 }
