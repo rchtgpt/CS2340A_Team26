@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,6 +59,8 @@ public class InputMealFragment extends Fragment {
                     }
 
                     calorieGoalText.setText("Calculated Calorie Goal: " + bmr);
+                    Log.i("TAG", String.valueOf(snapshot.child("meals").getValue()));
+
                 }
             }
 
