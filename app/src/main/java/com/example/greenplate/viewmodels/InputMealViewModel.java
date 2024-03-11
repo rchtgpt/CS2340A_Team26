@@ -3,7 +3,8 @@ package com.example.greenplate.viewmodels;
 import androidx.lifecycle.ViewModel;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.example.greenplate.models.Meal;
+import java.util.HashMap;
+import java.util.Map;
 
 public class InputMealViewModel extends ViewModel {
     private DatabaseReference mDatabase;
@@ -12,15 +13,21 @@ public class InputMealViewModel extends ViewModel {
         mDatabase = FirebaseDatabase.getInstance().getReference();
     }
 
-    public void storeMeal(String mealName, int calories) {
-        Meal newMeal = new Meal(mealName, calories);
-        String mealId = mDatabase.child("meals").push().getKey();
-        mDatabase.child("meals").child(mealId).setValue(newMeal)
+    public void storeMeal(String userId, String mealName, int calories) {
+        // Get a reference to the user
+        DatabaseReference userRef = mDatabase.child("users").child(userId);
+
+        // Update the user's meals map with the new meal
+        Map<String, Object> mealUpdates = new HashMap<>();
+        mealUpdates.put("/meals/" + mealName, calories);
+
+        userRef.updateChildren(mealUpdates)
                 .addOnSuccessListener(aVoid -> {
-                    // Handle successful data storage on button clikc
+                    // Handle successful update
                 })
                 .addOnFailureListener(e -> {
-                    // Handle the error if submission is not successsful.
+                    // Handle failed update
                 });
     }
+
 }

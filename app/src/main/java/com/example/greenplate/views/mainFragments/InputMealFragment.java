@@ -1,8 +1,6 @@
 package com.example.greenplate.views.mainFragments;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -10,54 +8,65 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import com.example.greenplate.R;
 import com.example.greenplate.viewmodels.InputMealViewModel;
-
+import com.google.firebase.auth.FirebaseAuth;
 
 public class InputMealFragment extends Fragment {
-    private InputMealViewModel mViewModel;
-    private TextInputEditText nameEditText;
-    private TextInputEditText caloriesEditText;
-    private Button storeMealButton;
 
-    public static InputMealFragment newInstance() {
-        return new InputMealFragment();
-    }
+    private Button storeMealBtn;
+    private TextInputEditText mealNameInput, mealCaloriesInput;
+    private InputMealViewModel inputMealViewModel;
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_input_meal, container, false);
-    }
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_input_meal, container, false);
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        storeMealBtn = view.findViewById(R.id.storeMealBtn);
+        mealNameInput = view.findViewById(R.id.mealNameInput);
+        mealCaloriesInput = view.findViewById(R.id.mealCaloriesInput);
 
-        // Initialize ViewModel
-        mViewModel = new ViewModelProvider(getActivity()).get(InputMealViewModel.class);
+        inputMealViewModel = new ViewModelProvider(this).get(InputMealViewModel.class);
 
-        // Initialize UI components
-        nameEditText = view.findViewById(R.id.mealNameInput);
-        caloriesEditText = view.findViewById(R.id.mealCaloriesInput);
-        storeMealButton = view.findViewById(R.id.storeMealBtn);
+        storeMealBtn.setOnClickListener(v -> {
+            String mealName = mealNameInput.getText().toString().trim();
+            String calorieString = mealCaloriesInput.getText().toString().trim();
 
-        storeMealButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String mealName = nameEditText.getText().toString().trim();
-                String calorieString = caloriesEditText.getText().toString().trim();
-                if (!calorieString.isEmpty()) {
-                    int calories = Integer.parseInt(calorieString);
-                    mViewModel.storeMeal(mealName, calories);
-
-                    // After submission, reset the input fields or show a message to the user
-                    nameEditText.setText("");
-                    caloriesEditText.setText("");
-                }
+            if (mealName.isEmpty() || calorieString.isEmpty()) {
+                Toast.makeText(getActivity(), "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            int calories;
+            try {
+                calories = Integer.parseInt(calorieString);
+            } catch (NumberFormatException e) {
+                Toast.makeText(getActivity(), "Calories must be a number", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String userId = getCurrentUserId();
+            if (userId == null) {
+                Toast.makeText(getActivity(), "User not signed in", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            inputMealViewModel.storeMeal(userId, mealName, calories);
+            mealNameInput.setText("");
+            mealCaloriesInput.setText("");
         });
+
+        return view;
+    }
+
+    private String getCurrentUserId() {
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            return FirebaseAuth.getInstance().getCurrentUser().getUid();
+        } else {
+            return null;
+        }
     }
 }
