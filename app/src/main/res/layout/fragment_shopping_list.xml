@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".views.mainFragments.ShoppingListFragment">
+    tools:context="com.anychart.greenplate.views.mainFragments.ShoppingListFragment">
 
     <TextView
         android:layout_width="match_parent"

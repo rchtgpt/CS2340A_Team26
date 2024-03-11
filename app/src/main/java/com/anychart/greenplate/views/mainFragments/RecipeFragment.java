@@ -1,4 +1,4 @@
-package com.example.greenplate.views.mainFragments;
+package com.anychart.greenplate.views.mainFragments;
 
 import android.os.Bundle;
 
@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.greenplate.R;
-import com.example.greenplate.viewmodels.RecipeViewModel;
+import com.anychart.greenplate.viewmodels.RecipeViewModel;
 
 public class RecipeFragment extends Fragment {
 

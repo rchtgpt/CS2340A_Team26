@@ -1,4 +1,4 @@
-package com.example.greenplate.viewmodels;
+package com.anychart.greenplate.viewmodels;
 
 import androidx.lifecycle.ViewModel;
 

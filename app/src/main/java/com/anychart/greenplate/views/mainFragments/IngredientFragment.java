@@ -1,4 +1,4 @@
-package com.example.greenplate.views.mainFragments;
+package com.anychart.greenplate.views.mainFragments;
 
 import android.os.Bundle;
 
@@ -10,21 +10,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.anychart.greenplate.viewmodels.IngredientViewModel;
 import com.example.greenplate.R;
-import com.example.greenplate.viewmodels.ShoppingListViewModel;
 
-public class ShoppingListFragment extends Fragment {
+public class IngredientFragment extends Fragment {
 
-    private ShoppingListViewModel mViewModel;
+    private IngredientViewModel mViewModel;
 
-    public static ShoppingListFragment newInstance() {
-        return new ShoppingListFragment();
+    public static IngredientFragment newInstance() {
+        return new IngredientFragment();
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_shopping_list, container, false);
+        return inflater.inflate(R.layout.fragment_ingredient, container, false);
     }
 
 }

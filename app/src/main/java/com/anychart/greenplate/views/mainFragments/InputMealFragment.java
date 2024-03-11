@@ -1,4 +1,4 @@
-package com.example.greenplate.views.mainFragments;
+package com.anychart.greenplate.views.mainFragments;
 
 import android.os.Bundle;
 
@@ -11,20 +11,20 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.greenplate.R;
-import com.example.greenplate.viewmodels.IngredientViewModel;
+import com.anychart.greenplate.viewmodels.InputMealViewModel;
 
-public class IngredientFragment extends Fragment {
+public class InputMealFragment extends Fragment {
 
-    private IngredientViewModel mViewModel;
+    private InputMealViewModel mViewModel;
 
-    public static IngredientFragment newInstance() {
-        return new IngredientFragment();
+    public static InputMealFragment newInstance() {
+        return new InputMealFragment();
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_ingredient, container, false);
+        return inflater.inflate(R.layout.fragment_input_meal, container, false);
     }
 
 }
