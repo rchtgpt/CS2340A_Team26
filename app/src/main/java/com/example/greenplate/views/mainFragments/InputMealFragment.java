@@ -28,6 +28,7 @@ import java.util.Map;
 public class InputMealFragment extends Fragment {
 
     private Button storeMealBtn;
+
     private TextInputEditText mealNameInput, mealCaloriesInput;
     private TextView calorieGoalText, dailyCalorieText;
     private InputMealViewModel inputMealViewModel;
