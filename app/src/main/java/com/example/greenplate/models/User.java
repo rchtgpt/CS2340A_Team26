@@ -8,13 +8,16 @@ public class User {
     private String weight;
     private String gender;
 
-    public User(String firstName, String lastName, String email, String height, String weight, String gender) {
+    private String age;
+
+    public User(String firstName, String lastName, String email, String height, String weight, String gender, String age) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.height = height;
         this.weight = weight;
         this.gender = gender;
+        this.age = age;
     }
 
     // Getter for firstName
@@ -58,6 +61,10 @@ public class User {
     public String getGender() {return gender;}
 
     public void setGender(String gender) {this.gender = gender;}
+
+    public String getAge() {return age;}
+
+    public void setAge(String age) {this.age = age;}
 
 
 
