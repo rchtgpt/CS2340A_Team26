@@ -171,7 +171,7 @@ public class InputMealFragment extends Fragment {
                                                     calorieGoalText.setText("Calculated Calorie Goal: " + bmr);
                                                     calorieGoal = bmr; // Update global BMR value
                                                 } catch (NumberFormatException e) {
-                                                    Toast.makeText(getContext(), "Error parsing profile information.", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(getContext(), "Enter values in Profile Page", Toast.LENGTH_SHORT).show();
                                                 }
                                             }
                                         }
