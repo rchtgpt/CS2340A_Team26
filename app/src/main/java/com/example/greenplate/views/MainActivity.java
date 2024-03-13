@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (item.getItemId() == R.id.shoppingList){
                 replaceFragment(new ShoppingListFragment());
             } else {
-                replaceFragment(ProfileFragment.getInstance());
+                replaceFragment(new ProfileFragment());
             }
             return true;
         });

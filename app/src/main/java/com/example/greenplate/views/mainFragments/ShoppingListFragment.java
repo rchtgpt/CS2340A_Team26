@@ -13,11 +13,9 @@ import android.view.ViewGroup;
 import com.example.greenplate.R;
 import com.example.greenplate.viewmodels.ShoppingListViewModel;
 
-public class
-ShoppingListFragment extends Fragment {
+public class ShoppingListFragment extends Fragment {
 
     private ShoppingListViewModel mViewModel;
-
     public static ShoppingListFragment newInstance() {
         return new ShoppingListFragment();
     }

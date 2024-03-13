@@ -40,24 +40,9 @@ public class ProfileFragment extends Fragment {
 
     private TextInputEditText uEmail, uHeight, uWeight, uGender, uAge;
 
-    private static ProfileFragment instance;
-
-    private ProfileFragment() {
+    public static ProfileFragment newInstance() {
+        return new ProfileFragment();
     }
-
-    public static ProfileFragment getInstance() {
-        if (instance == null) {
-            instance = new ProfileFragment();
-        }
-        return instance;
-    }
-
-    /**
-     *
-     *     public static ProfileFragment newInstance() {
-     *         return new ProfileFragment();
-     *     }
-     */
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
