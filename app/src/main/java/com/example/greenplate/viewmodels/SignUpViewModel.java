@@ -2,13 +2,9 @@ package com.example.greenplate.viewmodels;
 
 import android.text.Editable;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 
 import com.example.greenplate.models.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -20,12 +16,6 @@ public class SignUpViewModel extends ViewModel {
     public static final String defaultHeight = "Enter your Height (in inches)";
     public static final String defaultWeight = "Enter your Weight (in lbs)";
     public static final String defaultAge = "Enter your Age";
-    private boolean success;
-
-    public SignUpViewModel() {
-        firebaseAuth = FirebaseAuth.getInstance();
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-    }
 
     public boolean handleInputData(Editable username, Editable password, Editable firstName, Editable lastName) {
         if (username == null) {
@@ -64,18 +54,18 @@ public class SignUpViewModel extends ViewModel {
         String firstNameStr = String.valueOf(firstName).trim();
         String lastNameStr = String.valueOf(lastName).trim();
 
-        firebaseAuth.createUserWithEmailAndPassword(email, passwordStr).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    User user = new User(firstNameStr, lastNameStr, email, defaultHeight, defaultWeight, defaultGender, defaultAge);
-                    databaseReference.child("users")
-                            .child(firebaseAuth.getCurrentUser()
-                                    .getUid()).setValue(user);
-                    signUpListener.onSignUpSuccess();
-                } else {
-                    signUpListener.onSignUpFailure();
-                }
+        firebaseAuth = FirebaseAuth.getInstance();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+
+        firebaseAuth.createUserWithEmailAndPassword(email, passwordStr).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                User user = new User(firstNameStr, lastNameStr, email, defaultHeight, defaultWeight, defaultGender, defaultAge);
+                databaseReference.child("users")
+                        .child(firebaseAuth.getCurrentUser()
+                                .getUid()).setValue(user);
+                signUpListener.onSignUpSuccess();
+            } else {
+                signUpListener.onSignUpFailure();
             }
         });
     }
