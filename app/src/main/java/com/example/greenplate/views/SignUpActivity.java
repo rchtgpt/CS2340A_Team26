@@ -11,10 +11,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.greenplate.R;
-import com.example.greenplate.models.SingletonFirebase;
-import com.example.greenplate.models.User;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
 import com.example.greenplate.viewmodels.SignUpViewModel;
 
 public class SignUpActivity extends AppCompatActivity {
