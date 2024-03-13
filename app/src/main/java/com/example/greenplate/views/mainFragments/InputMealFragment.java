@@ -1,5 +1,12 @@
 package com.example.greenplate.views.mainFragments;
 
+
+import android.content.Context;
+import static com.example.greenplate.viewmodels.SignUpViewModel.defaultAge;
+import static com.example.greenplate.viewmodels.SignUpViewModel.defaultGender;
+import static com.example.greenplate.viewmodels.SignUpViewModel.defaultHeight;
+import static com.example.greenplate.viewmodels.SignUpViewModel.defaultWeight;
+
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -145,7 +152,7 @@ public class InputMealFragment extends Fragment {
                                                     calorieGoalText.setText("Calculated Calorie Goal: " + bmr);
                                                     calorieGoal = bmr; // Update global BMR value
                                                 } catch (NumberFormatException e) {
-                                                    Toast.makeText(getContext(), "Error parsing profile information.", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(getContext(), "Enter values in Profile Page", Toast.LENGTH_SHORT).show();
                                                 }
                                             }
                                         }
