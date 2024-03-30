@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.greenplate.R;
 import com.example.greenplate.models.Recipe;
@@ -72,11 +73,16 @@ public class RecipeFragment extends Fragment {
             String ingredients = recipeIngredientsInput.getText().toString().trim();
             String quantity = recipeQuantityInput.getText().toString().trim();
 
-            adapter.storeRecipe(ingredients, quantity, recipeName);
+            String[] inputRes = adapter.handleRecipeInputData(ingredients, quantity, recipeName);
+            if (inputRes[0].equals("false")) {
+                Toast.makeText(getContext(), inputRes[1], Toast.LENGTH_LONG).show();
+            } else {
+                adapter.storeRecipe(ingredients, quantity, recipeName);
 
-            recipeNameInput.setText("");
-            recipeIngredientsInput.setText("");
-            recipeQuantityInput.setText("");
+                recipeNameInput.setText("");
+                recipeIngredientsInput.setText("");
+                recipeQuantityInput.setText("");
+            }
         });
 
         recipes.addValueEventListener(new ValueEventListener() {

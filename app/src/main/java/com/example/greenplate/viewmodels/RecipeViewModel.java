@@ -29,6 +29,39 @@ public class RecipeViewModel extends RecyclerView.Adapter<RecipeViewModel.Recipe
         this.recipeList = recipeList;
     }
 
+    public String[] handleRecipeInputData(String ingredients, String quantity,
+                                         String title) {
+        if (ingredients == null) {
+            return new String[]{"false", "Ingredients are null"};
+        } else if (quantity == null) {
+            return new String[]{"false", "Quantity is null"};
+        } else if (title == null) {
+            return new String[]{"false", "Recipe title is null"};
+        }
+
+        if (quantity.trim().isEmpty()) {
+            return new String[]{"false", "Quantity field is empty"};
+        } else if (ingredients.trim().isEmpty()) {
+            return new String[]{"false", "Ingredients field is empty"};
+        } else if (title.trim().isEmpty()) {
+            return new String[]{"false", "Recipe title field is empty"};
+        }
+
+        int quantityNum = -1;
+
+        try {
+            quantityNum = Integer.parseInt(quantity);
+        } catch(NumberFormatException e) {
+            return new String[]{"false", "Quantity must be an integer"};
+        }
+
+        if (quantityNum < 0) {
+            return new String[]{"false", "Quantity cannot be negative"};
+        }
+
+        return new String[]{"true", ""};
+    }
+
     public void storeRecipe(String ingredients, String quantity,
                             String title) {
         Recipe recipe = new Recipe(title, Arrays.asList(ingredients.split(",")), quantity);
