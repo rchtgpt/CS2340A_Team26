@@ -1,6 +1,7 @@
 package com.example.greenplate.viewmodels;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,20 +9,56 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
+
+import com.example.greenplate.models.SingletonFirebase;
 import com.example.greenplate.views.RecipeDetailActivity;
 
 import com.example.greenplate.R;
 import com.example.greenplate.models.Recipe;
+import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 // Behaves like an adapter
 public class RecipeViewModel extends RecyclerView.Adapter<RecipeViewModel.RecipeViewHolder> {
     private List<Recipe> recipeList;
-
+    private DatabaseReference mDatabase = SingletonFirebase.getInstance().getDatabaseReference();
     public RecipeViewModel(List<Recipe> recipeList) {
         this.recipeList = recipeList;
+    }
+
+    public void storeRecipe(String ingredients, String quantity,
+                            String title) {
+        Recipe recipe = new Recipe(title, Arrays.asList(ingredients.split(",")), quantity);
+
+        mDatabase.child("numRecipes").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Log.e("GreenPlate", "Recipe Key: " + task.getResult().getValue());
+
+                long recipeKey = (long) task.getResult().getValue();
+                recipeKey += 1;
+
+                DatabaseReference cookbookRef =
+                        mDatabase.child("cookbook").child(String.valueOf(recipeKey));
+
+                long finalRecipeKey = recipeKey;
+
+                cookbookRef.setValue(recipe)
+                        .addOnSuccessListener(aVoid -> {
+                            mDatabase.child("numRecipes").setValue(finalRecipeKey)
+                                    .addOnFailureListener(e -> {
+                                        Log.e("GreenPlate", "Recipe key was not updated");
+                                    });
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e("GreenPlate", "Recipe was not added");
+                        });
+            } else {
+                Log.e("GreenPlate", "Invalid recipe key");
+            }
+        });
     }
 
     @NonNull

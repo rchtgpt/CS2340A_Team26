@@ -12,11 +12,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.example.greenplate.R;
 import com.example.greenplate.models.Recipe;
 import com.example.greenplate.models.SingletonFirebase;
 import com.example.greenplate.viewmodels.RecipeViewModel;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,6 +37,13 @@ public class RecipeFragment extends Fragment {
     private String recipeQuantity;
     private List<String> recipeList;
     private List<String> recipeIngredients;
+    private Button storeRecipeBtn;
+
+    private TextInputEditText recipeNameInput;
+
+    private TextInputEditText recipeIngredientsInput;
+    private TextInputEditText recipeQuantityInput;
+
 
     private DatabaseReference recipes; // fb stands for firebase not facebook LOL ROFL #HAHAH
     public static RecipeFragment newInstance() {
@@ -53,7 +62,22 @@ public class RecipeFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recipeList = new ArrayList<>();
         List<Recipe> recipeList = new ArrayList<>();
+        storeRecipeBtn = rootView.findViewById(R.id.storeRecipeBtn);
+        recipeNameInput = rootView.findViewById(R.id.recipeNameInput);
+        recipeIngredientsInput = rootView.findViewById(R.id.ingredientListInput);
+        recipeQuantityInput = rootView.findViewById(R.id.quantityInput);
 
+        storeRecipeBtn.setOnClickListener(v -> {
+            String recipeName = recipeNameInput.getText().toString().trim();
+            String ingredients = recipeIngredientsInput.getText().toString().trim();
+            String quantity = recipeQuantityInput.getText().toString().trim();
+
+            adapter.storeRecipe(ingredients, quantity, recipeName);
+
+            recipeNameInput.setText("");
+            recipeIngredientsInput.setText("");
+            recipeQuantityInput.setText("");
+        });
 
         recipes.addValueEventListener(new ValueEventListener() {
             @Override
