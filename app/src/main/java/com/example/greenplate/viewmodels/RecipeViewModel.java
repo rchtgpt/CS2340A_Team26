@@ -24,9 +24,13 @@ import java.util.List;
 // Behaves like an adapter
 public class RecipeViewModel extends RecyclerView.Adapter<RecipeViewModel.RecipeViewHolder> {
     private List<Recipe> recipeList;
-    private DatabaseReference mDatabase = SingletonFirebase.getInstance().getDatabaseReference();
+    private DatabaseReference mDatabase;
+    public RecipeViewModel() {
+        // for testing
+    }
     public RecipeViewModel(List<Recipe> recipeList) {
         this.recipeList = recipeList;
+        mDatabase = SingletonFirebase.getInstance().getDatabaseReference();
     }
 
     public String[] handleRecipeInputData(String ingredients, String quantity,
@@ -55,7 +59,7 @@ public class RecipeViewModel extends RecyclerView.Adapter<RecipeViewModel.Recipe
             return new String[]{"false", "Quantity must be an integer"};
         }
 
-        if (quantityNum < 0) {
+        if (quantityNum <= 0) {
             return new String[]{"false", "Quantity cannot be negative"};
         }
 
