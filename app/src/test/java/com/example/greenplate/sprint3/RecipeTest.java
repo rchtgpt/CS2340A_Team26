@@ -30,7 +30,6 @@ public class RecipeTest {
                 recipeViewModel.handleRecipeInputData("", "1", "oats")[0];
         assertEquals("Input should not be valid","false",isInputValid);
     }
-
     @Test
     public void testEmptyQuantityField() {
         RecipeViewModel recipeViewModel = new RecipeViewModel();
