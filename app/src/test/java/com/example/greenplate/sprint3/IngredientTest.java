@@ -31,9 +31,4 @@ public class IngredientTest {
                 .handleIngredientInputData("", 5,10,"10/11/2024")[0];
         assertEquals("Input shouldn't be valid","false",isInputValid);
     }
-
-
-
-
-
 }
