@@ -28,8 +28,8 @@ public class IngredientTest {
     @Test
     public void testEmptyNameField() {
         String isInputValid = IngredientViewModel
-                .handleIngredientInputData("", 5,10,"10/10/2024")[0];
-        assertEquals("Input should not be valid","false",isInputValid);
+                .handleIngredientInputData("", 5,10,"10/11/2024")[0];
+        assertEquals("Input shouldn't be valid","false",isInputValid);
     }
 
 
