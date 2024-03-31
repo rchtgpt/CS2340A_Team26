@@ -27,10 +27,8 @@ public class IngredientTest {
     }
     @Test
     public void testEmptyNameField() {
-        IngredientViewModel IngredientViewModel = new IngredientViewModel();
-        String isInputValid =
-                com.example.greenplate.viewmodels.IngredientViewModel
-                        .handleIngredientInputData("", 5,10,"10/10/2024")[0];
+        String isInputValid = IngredientViewModel
+                .handleIngredientInputData("", 5,10,"10/10/2024")[0];
         assertEquals("Input should not be valid","false",isInputValid);
     }
 
