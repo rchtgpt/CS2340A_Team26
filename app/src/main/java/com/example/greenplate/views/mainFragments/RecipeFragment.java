@@ -128,12 +128,12 @@ public class RecipeFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 // Apply sorting strategy based on selected option
                 switch (position) {
-                    case 0: // Sort by title
-                        adapter.setSortingStrategy(new SortByTitleStrategy());
+                    case 0: // Sort by quantity
+                        adapter.setSortingStrategy(new SortByQuantityStrategy());
                         adapter.applySortStrategy();
                         break;
-                    case 1: // Sort by quantity
-                        adapter.setSortingStrategy(new SortByQuantityStrategy());
+                    case 1: // Sort by title
+                        adapter.setSortingStrategy(new SortByTitleStrategy());
                         adapter.applySortStrategy();
                         break;
                 }
