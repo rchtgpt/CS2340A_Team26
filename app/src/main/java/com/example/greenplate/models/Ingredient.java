@@ -2,13 +2,13 @@ package com.example.greenplate.models;
 
 public class Ingredient {
     private String name;
-    private double quantity;
+    private int quantity;
     private int caloriesPerServing;
     private String expirationDate; // Optional, can be null if not provided
     public Ingredient() {
         //
     }
-    public Ingredient(String name, double quantity, int caloriesPerServing, String expirationDate) {
+    public Ingredient(String name, int quantity, int caloriesPerServing, String expirationDate) {
         this.name = name;
         this.quantity = quantity;
         this.caloriesPerServing = caloriesPerServing;
@@ -31,6 +31,7 @@ public class Ingredient {
         if (quantity > 0) {
             this.quantity = quantity;
         }
+
     }
 
     public int getCaloriesPerServing() {
