@@ -4,12 +4,11 @@ import androidx.lifecycle.ViewModel;
 import com.example.greenplate.models.Ingredient;
 import com.example.greenplate.models.SingletonFirebase;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
+
 
 public class IngredientViewModel extends ViewModel {
 
@@ -21,12 +20,25 @@ public class IngredientViewModel extends ViewModel {
     }
 
     public IngredientViewModel() {
-        // Assuming "pantry" is a direct child of the database root
         mDatabase = SingletonFirebase.getInstance().getDatabaseReference();
     }
 
     public void addIngredientToPantry(String userId, Ingredient ingredient) {
-        DatabaseReference pantryRef = mDatabase.child("users").child(userId).child("pantry").child(ingredient.getName());
+        if (ingredient.getName() == null || ingredient.getName().trim().isEmpty()) {
+            messageLiveData.postValue("Ingredient must have a name.");
+            return;
+        }
+        if (ingredient.getQuantity() <= 0 ) {
+            messageLiveData.postValue("Quantity must be positive.");
+            return;
+        }
+        if (ingredient.getCaloriesPerServing() <= 0) {
+            messageLiveData.postValue("Calories per serving must be positive.");
+            return;
+        }
+
+        DatabaseReference pantryRef = mDatabase.child("users").child(userId).child("pantry")
+                .child(ingredient.getName());
 
         pantryRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -43,7 +55,6 @@ public class IngredientViewModel extends ViewModel {
                     addPantry(pantryRef, ingredient);
                 }
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // Handle potential errors
@@ -51,12 +62,7 @@ public class IngredientViewModel extends ViewModel {
             }
         });
     }
-
     private void addPantry(DatabaseReference pantryRef, Ingredient ingredient) {
-        if (ingredient.getQuantity() <= 0) {
-            messageLiveData.postValue("Quantity must be positive.");
-            return;
-        }
         pantryRef.setValue(ingredient)
                 .addOnSuccessListener(aVoid -> messageLiveData.postValue("Ingredient added to pantry."))
                 .addOnFailureListener(e -> messageLiveData.postValue("Failed to add ingredient: " + e.getMessage()));

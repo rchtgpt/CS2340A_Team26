@@ -28,7 +28,9 @@ public class Ingredient {
     }
 
     public void setQuantity(double quantity) {
-        this.quantity = quantity;
+        if (quantity > 0) {
+            this.quantity = quantity;
+        }
     }
 
     public int getCaloriesPerServing() {
