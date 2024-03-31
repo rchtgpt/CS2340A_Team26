@@ -13,7 +13,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
-import androidx.lifecycle.MutableLiveData;
 public class IngredientViewModel extends ViewModel {
 
     private DatabaseReference mDatabase;
@@ -40,7 +39,7 @@ public class IngredientViewModel extends ViewModel {
             messageLiveData.postValue("Ingredient must have a name.");
             return;
         }
-        if (ingredient.getQuantity() <= 0 ) {
+        if (ingredient.getQuantity() <= 0) {
             messageLiveData.postValue("Quantity must be positive.");
             return;
         }
@@ -58,10 +57,7 @@ public class IngredientViewModel extends ViewModel {
                 if (dataSnapshot.exists()) {
                     Ingredient existingIngredient = dataSnapshot.getValue(Ingredient.class);
                     if (existingIngredient != null && existingIngredient.getQuantity() > 0) {
-                        // to add
-                    } else {
                         messageLiveData.postValue("The ingredient already exists.");
-                        addPantry(pantryRef, ingredient);
                     }
                 } else {
                     // Ingredient does not exist, proceed to add
