@@ -13,6 +13,7 @@ import java.util.Arrays;
 public class IngredientTest {
     private static final double DELTA = 0.0001; // A small number
 
+    // Shreyashi Tests
     @Test
     public void testIngredientQuantityNonZero() {
         Ingredient testIng = new Ingredient("Orange", 2, 50, "10/20/2025");
@@ -30,5 +31,18 @@ public class IngredientTest {
         String isInputValid = IngredientViewModel
                 .handleIngredientInputData("", 5,10,"10/11/2024")[0];
         assertEquals("Input shouldn't be valid","false",isInputValid);
+    }
+    // Teghpreet Tests
+    @Test
+    public void testCaloriesQuantityNonZero() {
+        Ingredient testIng = new Ingredient("Cheese", 5, 500, "10/20/2025");
+        testIng.setCaloriesPerServing(0);
+        assertEquals("Calories will not change", 500, testIng.getCaloriesPerServing(), DELTA);
+    }
+    @Test
+    public void testIngredientCaloriesNonNegative() {
+        Ingredient testIng = new Ingredient("Bell Peppers", 10, 100, "10/20/2025");
+        testIng.setCaloriesPerServing(-200);
+        assertEquals("Calories will not change", 100, testIng.getCaloriesPerServing(), DELTA);
     }
 }
