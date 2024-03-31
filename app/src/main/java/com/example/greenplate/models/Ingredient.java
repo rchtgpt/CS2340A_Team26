@@ -27,7 +27,7 @@ public class Ingredient {
         return quantity;
     }
 
-    public void setQuantity(double quantity) {
+    public void setQuantity(int quantity) {
         if (quantity > 0) {
             this.quantity = quantity;
         }
