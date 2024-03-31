@@ -8,8 +8,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import androidx.lifecycle.MutableLiveData;
-
-
 public class IngredientViewModel extends ViewModel {
 
     private DatabaseReference mDatabase;
@@ -46,6 +44,7 @@ public class IngredientViewModel extends ViewModel {
                 if (dataSnapshot.exists()) {
                     Ingredient existingIngredient = dataSnapshot.getValue(Ingredient.class);
                     if (existingIngredient != null && existingIngredient.getQuantity() > 0) {
+                        // to add
                     } else {
                         messageLiveData.postValue("The ingredient already exists.");
                         addPantry(pantryRef, ingredient);
@@ -64,7 +63,9 @@ public class IngredientViewModel extends ViewModel {
     }
     private void addPantry(DatabaseReference pantryRef, Ingredient ingredient) {
         pantryRef.setValue(ingredient)
-                .addOnSuccessListener(aVoid -> messageLiveData.postValue("Ingredient added to pantry."))
-                .addOnFailureListener(e -> messageLiveData.postValue("Failed to add ingredient: " + e.getMessage()));
+                .addOnSuccessListener(aVoid ->
+                        messageLiveData.postValue("Ingredient added to pantry."))
+                .addOnFailureListener(e ->
+                        messageLiveData.postValue("Failed to add ingredient: " + e.getMessage()));
     }
 }
