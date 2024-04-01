@@ -28,40 +28,28 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class RecipeFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private RecipeViewModel adapter;
-    private String recipeTitle;
-    private String recipeQuantity;
     private DatabaseReference mDatabase;
     private List<Recipe> recipeList;
-    private List<String> recipeIngredients;
+
     private Button storeRecipeBtn;
     private Spinner sortSpinner; // Spinner for sorting options
-
     private TextInputEditText recipeNameInput;
     private TextInputEditText recipeIngredientsInput;
     private TextInputEditText recipeQuantityInput;
     private TextInputEditText recipeIngredientQuantityInput;
     private Map<String, Integer> userPantry = new HashMap<>();
-
-
     private DatabaseReference recipes;
-
-    public static RecipeFragment newInstance() {
-        return new RecipeFragment();
-    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -69,7 +57,6 @@ public class RecipeFragment extends Fragment {
         mDatabase = SingletonFirebase.getInstance().getDatabaseReference();
         final String userId = SingletonFirebase.getInstance()
                 .getFirebaseAuth().getCurrentUser().getUid();
-        Log.d("RecipeFragment", "Current User ID: " + userId);
         recipes = SingletonFirebase.getInstance().getDatabaseReference()
                 .child("cookbook");
         View rootView = inflater.inflate(R.layout.fragment_recipe, container, false);
@@ -77,7 +64,6 @@ public class RecipeFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recipeList = new ArrayList<>();
 
-        // Initialize the spinner
         sortSpinner = rootView.findViewById(R.id.sortSpinner);
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(
                 getActivity(), R.array.sort_options, android.R.layout.simple_spinner_item);
@@ -112,7 +98,7 @@ public class RecipeFragment extends Fragment {
             } else {
                 Toast.makeText(getContext(), inputRes[1], Toast.LENGTH_LONG).show();
             }
-
+            // to reset after hitting submit
             recipeNameInput.setText("");
             recipeIngredientsInput.setText("");
             recipeQuantityInput.setText("");
@@ -171,7 +157,6 @@ public class RecipeFragment extends Fragment {
         pantryRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d("RecipeFragment", "Pantry dataSnapshot: " + dataSnapshot.toString());
                 for (DataSnapshot item : dataSnapshot.getChildren()) {
                     String ingredientName = item.child("name").getValue(String.class);
                     Integer quantity = item.child("quantity").getValue(Integer.class);
@@ -179,17 +164,13 @@ public class RecipeFragment extends Fragment {
                         userPantry.put(ingredientName, quantity);
                     }
                 }
-                Log.d("RecipeFragment", "Pantry loaded: " + userPantry.toString());
                 setupRecyclerView();
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.e("RecipeFragment", "Failed to read user pantry", databaseError.toException());
             }
         });
-
-
         return rootView;
     }
 
@@ -204,7 +185,7 @@ public class RecipeFragment extends Fragment {
             if (task.isSuccessful()) {
                 Log.d("RecipeFragment", "Recipe saved successfully.");
             } else {
-                Log.e("RecipeFragment", "Failed to save recipe.", task.getException());
+                Log.e("RecipeFragment", "Failed to save recipe. Something went wrong.", task.getException());
             }
         });
     }
