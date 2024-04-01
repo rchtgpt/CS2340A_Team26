@@ -49,6 +49,8 @@ public class RecipeFragment extends Fragment {
     private TextInputEditText recipeNameInput;
     private TextInputEditText recipeIngredientsInput;
     private TextInputEditText recipeQuantityInput;
+    private TextInputEditText recipeIngredientQuantityInput;
+
 
     private DatabaseReference recipes;
 
@@ -79,27 +81,32 @@ public class RecipeFragment extends Fragment {
         recipeNameInput = rootView.findViewById(R.id.recipeNameInput);
         recipeIngredientsInput = rootView.findViewById(R.id.ingredientListInput);
         recipeQuantityInput = rootView.findViewById(R.id.quantityInput);
+        recipeIngredientQuantityInput = rootView.findViewById(R.id.ingredientQuantityInput);
 
         storeRecipeBtn.setOnClickListener(v -> {
             String recipeName = recipeNameInput.getText().toString().trim();
             String ingredients = recipeIngredientsInput.getText().toString().trim();
             String quantity = recipeQuantityInput.getText().toString().trim();
+            String quantityIngredients = recipeIngredientQuantityInput.getText().toString().trim();
 
-            String[] inputRes = adapter.handleRecipeInputData(ingredients, quantity, recipeName);
+            String[] inputRes = adapter.handleRecipeInputData(ingredients, quantity, recipeName,
+                    quantityIngredients);
             if (inputRes[0].equals("false")) {
                 Toast.makeText(getContext(), inputRes[1], Toast.LENGTH_LONG).show();
             } else {
-                adapter.storeRecipe(ingredients, quantity, recipeName);
+                adapter.storeRecipe(ingredients, quantity, recipeName, quantityIngredients);
 
                 recipeNameInput.setText("");
                 recipeIngredientsInput.setText("");
                 recipeQuantityInput.setText("");
+                recipeIngredientQuantityInput.setText("");
             }
         });
 
         recipes.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                recipeList.clear();
                 for (DataSnapshot recipeSnapshot : dataSnapshot.getChildren()) {
                     GenericTypeIndicator<HashMap<String, Object>> genericTypeIndicator =
                             new GenericTypeIndicator<HashMap<String, Object>>() { };
@@ -107,7 +114,8 @@ public class RecipeFragment extends Fragment {
                     recipeTitle = (String) recipe.get("title");
                     recipeIngredients = (List<String>) recipe.get("ingredients");
                     recipeQuantity = (String) recipe.get("quantity");
-                    recipeList.add(new Recipe(recipeTitle, recipeIngredients, recipeQuantity));
+                    recipeList.add(new Recipe(recipeTitle, recipeIngredients, recipeQuantity,
+                            null));
                     adapter = new RecipeViewModel(recipeList);
                     recyclerView.setAdapter(adapter);
                     adapter = new RecipeViewModel(recipeList);
