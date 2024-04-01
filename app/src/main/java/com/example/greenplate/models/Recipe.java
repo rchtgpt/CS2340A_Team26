@@ -44,7 +44,9 @@ public class Recipe {
     }
 
     public void setQuantity(String quantity) {
-        this.quantity = quantity;
+        if (Integer.parseInt(quantity) > 0) {
+            this.quantity = quantity;
+        }
     }
 
     public Map<String, Integer> getIngredientQuantities() {
