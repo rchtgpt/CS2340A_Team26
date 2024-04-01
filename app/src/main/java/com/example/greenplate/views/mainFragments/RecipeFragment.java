@@ -32,8 +32,11 @@ import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class RecipeFragment extends Fragment {
 
@@ -41,6 +44,7 @@ public class RecipeFragment extends Fragment {
     private RecipeViewModel adapter;
     private String recipeTitle;
     private String recipeQuantity;
+    private DatabaseReference mDatabase;
     private List<Recipe> recipeList;
     private List<String> recipeIngredients;
     private Button storeRecipeBtn;
@@ -50,6 +54,7 @@ public class RecipeFragment extends Fragment {
     private TextInputEditText recipeIngredientsInput;
     private TextInputEditText recipeQuantityInput;
     private TextInputEditText recipeIngredientQuantityInput;
+    private Map<String, Integer> userPantry = new HashMap<>();
 
 
     private DatabaseReference recipes;
@@ -61,8 +66,10 @@ public class RecipeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        mDatabase = SingletonFirebase.getInstance().getDatabaseReference();
         final String userId = SingletonFirebase.getInstance()
                 .getFirebaseAuth().getCurrentUser().getUid();
+        Log.d("RecipeFragment", "Current User ID: " + userId);
         recipes = SingletonFirebase.getInstance().getDatabaseReference()
                 .child("cookbook");
         View rootView = inflater.inflate(R.layout.fragment_recipe, container, false);
@@ -89,57 +96,62 @@ public class RecipeFragment extends Fragment {
             String quantity = recipeQuantityInput.getText().toString().trim();
             String quantityIngredients = recipeIngredientQuantityInput.getText().toString().trim();
 
-            String[] inputRes = adapter.handleRecipeInputData(ingredients, quantity, recipeName,
-                    quantityIngredients);
-            if (inputRes[0].equals("false")) {
-                Toast.makeText(getContext(), inputRes[1], Toast.LENGTH_LONG).show();
-            } else {
-                adapter.storeRecipe(ingredients, quantity, recipeName, quantityIngredients);
+            String[] inputRes = adapter.handleRecipeInputData(ingredients, quantity, recipeName, quantityIngredients);
+            if (inputRes[0].equals("true")) {
+                List<String> ingredientsList = new ArrayList<>(Arrays.asList(ingredients.split(",")));
+                Map<String, Integer> ingredientQuantitiesMap = new HashMap<>();
 
-                recipeNameInput.setText("");
-                recipeIngredientsInput.setText("");
-                recipeQuantityInput.setText("");
-                recipeIngredientQuantityInput.setText("");
+                String[] quantitiesArr = quantityIngredients.split(",");
+                for (int i = 0; i < ingredientsList.size(); i++) {
+                    ingredientQuantitiesMap.put(ingredientsList.get(i).trim(), Integer.parseInt(quantitiesArr[i].trim()));
+                }
+
+                Recipe newRecipe = new Recipe(recipeName, ingredientsList, quantity, ingredientQuantitiesMap);
+
+                saveRecipeToFirebase(newRecipe);
+            } else {
+                Toast.makeText(getContext(), inputRes[1], Toast.LENGTH_LONG).show();
             }
+
+            recipeNameInput.setText("");
+            recipeIngredientsInput.setText("");
+            recipeQuantityInput.setText("");
+            recipeIngredientQuantityInput.setText("");
         });
 
         recipes.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                recipeList.clear();
                 for (DataSnapshot recipeSnapshot : dataSnapshot.getChildren()) {
-                    GenericTypeIndicator<HashMap<String, Object>> genericTypeIndicator =
-                            new GenericTypeIndicator<HashMap<String, Object>>() { };
-                    HashMap<String, Object> recipe = recipeSnapshot.getValue(genericTypeIndicator);
-                    recipeTitle = (String) recipe.get("title");
-                    recipeIngredients = (List<String>) recipe.get("ingredients");
-                    recipeQuantity = (String) recipe.get("quantity");
-                    recipeList.add(new Recipe(recipeTitle, recipeIngredients, recipeQuantity,
-                            null));
-                    adapter = new RecipeViewModel(recipeList);
-                    recyclerView.setAdapter(adapter);
-                    adapter = new RecipeViewModel(recipeList);
+                    Recipe recipe = recipeSnapshot.getValue(Recipe.class);
+                    if (recipe != null) {
+                        recipeList.add(recipe);
+                    }
+                }
+                if (adapter != null) {
+                    adapter.notifyDataSetChanged();
+                } else {
+                    adapter = new RecipeViewModel(recipeList, userPantry);
                     recyclerView.setAdapter(adapter);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e("ProfileFragment", "Failed to read global recipes",
-                        databaseError.toException());
+                Log.e("RecipeFragment", "Failed to read global recipes", databaseError.toException());
             }
         });
 
-        // Set listener for sorting options
         sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                // Apply sorting strategy based on selected option
                 switch (position) {
-                    case 0: // Sort by quantity
+                    case 0: // sort by qty
                         adapter.setSortingStrategy(new SortByQuantityStrategy());
                         adapter.applySortStrategy();
                         break;
-                    case 1: // Sort by title
+                    case 1: // sort by title
                         adapter.setSortingStrategy(new SortByTitleStrategy());
                         adapter.applySortStrategy();
                         break;
@@ -152,6 +164,48 @@ public class RecipeFragment extends Fragment {
             }
         });
 
+        DatabaseReference pantryRef = SingletonFirebase.getInstance().getDatabaseReference()
+                .child("users").child(userId).child("pantry");
+
+
+        pantryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.d("RecipeFragment", "Pantry dataSnapshot: " + dataSnapshot.toString());
+                for (DataSnapshot item : dataSnapshot.getChildren()) {
+                    String ingredientName = item.child("name").getValue(String.class);
+                    Integer quantity = item.child("quantity").getValue(Integer.class);
+                    if (ingredientName != null && quantity != null) {
+                        userPantry.put(ingredientName, quantity);
+                    }
+                }
+                Log.d("RecipeFragment", "Pantry loaded: " + userPantry.toString());
+                setupRecyclerView();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("RecipeFragment", "Failed to read user pantry", databaseError.toException());
+            }
+        });
+
+
         return rootView;
+    }
+
+    private void setupRecyclerView() {
+        adapter = new RecipeViewModel(recipeList, userPantry);
+        recyclerView.setAdapter(adapter);
+    }
+
+    private void saveRecipeToFirebase(Recipe recipe) {
+        DatabaseReference newRecipeRef = mDatabase.child("cookbook").push();
+        newRecipeRef.setValue(recipe).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Log.d("RecipeFragment", "Recipe saved successfully.");
+            } else {
+                Log.e("RecipeFragment", "Failed to save recipe.", task.getException());
+            }
+        });
     }
 }
