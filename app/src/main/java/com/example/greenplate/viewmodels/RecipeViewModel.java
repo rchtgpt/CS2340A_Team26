@@ -41,20 +41,22 @@ public class RecipeViewModel extends RecyclerView.Adapter<RecipeViewModel.Recipe
     private static boolean hasAllIngredients(Recipe recipe, Map<String, Integer> userPantry) {
         Map<String, Integer> requiredIngredients = recipe.getIngredientQuantities();
         if (requiredIngredients == null || userPantry == null) {
+            Log.d("RecipeViewModel", "One or more maps are null.");
             return false;
         }
         for (Map.Entry<String, Integer> entry : requiredIngredients.entrySet()) {
-            String ingredient = entry.getKey().toLowerCase(); // lower case
+            String ingredient = entry.getKey();
             int requiredQuantity = entry.getValue();
-            Integer pantryQuantity = userPantry.get(ingredient.toLowerCase());
+            Integer pantryQuantity = userPantry.get(ingredient);
+            Log.d("RecipeViewModel", "Checking ingredient: " + ingredient + ", required: " + requiredQuantity + ", in pantry: " + pantryQuantity);
+
             if (pantryQuantity == null || pantryQuantity < requiredQuantity) {
+                Log.d("RecipeViewModel", "Not enough " + ingredient);
                 return false;
             }
         }
         return true;
     }
-
-
 
 
     public RecipeViewModel() {
@@ -65,17 +67,18 @@ public class RecipeViewModel extends RecyclerView.Adapter<RecipeViewModel.Recipe
         mDatabase = SingletonFirebase.getInstance().getDatabaseReference();
     }
 
-
+    // Modified constructor to accept the sorting strategy
     public RecipeViewModel(List<Recipe> recipeList, RecipeSortStrategy sortStrategy) {
         this.recipeList = recipeList;
         this.sortStrategy = sortStrategy;
         mDatabase = SingletonFirebase.getInstance().getDatabaseReference();
     }
 
+    // Method to set the sorting strategy
     public void setSortingStrategy(RecipeSortStrategy sortingStrategy) {
         this.sortStrategy = sortingStrategy;
     }
-
+    // Method to apply the sorting strategy
     public void applySortStrategy() {
         if (sortStrategy != null) {
             recipeList = sortStrategy.sortRecipes(recipeList);
@@ -212,12 +215,13 @@ public class RecipeViewModel extends RecyclerView.Adapter<RecipeViewModel.Recipe
         void bind(Recipe recipe, Map<String, Integer> userPantry) {
             recipeTitleTextView.setText(recipe.getTitle());
 
+            // Create a human-readable string of ingredients and quantities
             StringBuilder ingredientsBuilder = new StringBuilder();
             Map<String, Integer> ingredientQuantities = recipe.getIngredientQuantities();
             if (ingredientQuantities != null) {
                 for (Map.Entry<String, Integer> entry : ingredientQuantities.entrySet()) {
                     if (ingredientsBuilder.length() > 0) {
-                        ingredientsBuilder.append(", "); // csv sep
+                        ingredientsBuilder.append(", "); // Separate entries with a comma
                     }
                     String ingredient = entry.getKey();
                     Integer quantity = entry.getValue();
@@ -226,7 +230,7 @@ public class RecipeViewModel extends RecyclerView.Adapter<RecipeViewModel.Recipe
             }
 
             if (ingredientsBuilder.length() == 0) {
-                ingredientsBuilder.append("No ingredients"); // if {} then ->
+                ingredientsBuilder.append("No ingredients"); // Fallback text if there are no ingredients
             }
 
             recipeIngredientsTextView.setText("Ingredients: " + ingredientsBuilder.toString());
@@ -234,15 +238,16 @@ public class RecipeViewModel extends RecyclerView.Adapter<RecipeViewModel.Recipe
             recipeQuantityTextView.setText("Quantity: " + recipe.getQuantity());
 
 
+            // Check if the user has enough ingredients and color-code accordingly
             if (hasAllIngredients(recipe, userPantry)) {
-                itemView.setBackgroundColor(Color.parseColor("#aff5a9"));
+                itemView.setBackgroundColor(Color.parseColor("#aff5a9")); // User has enough ingredients
                 itemView.setEnabled(true);
             } else {
-                itemView.setBackgroundColor(Color.parseColor("#f5b8a9"));
+                itemView.setBackgroundColor(Color.parseColor("#f5b8a9")); // User does not have enough ingredients
                 itemView.setEnabled(false);
             }
 
-
+            // Click listener
             itemView.setOnClickListener(v -> {
                 if (itemView.isEnabled()) {
                     Intent intent = new Intent(v.getContext(), RecipeDetailActivity.class);
