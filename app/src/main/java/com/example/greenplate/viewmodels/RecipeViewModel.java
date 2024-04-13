@@ -1,11 +1,15 @@
 package com.example.greenplate.viewmodels;
 
+import android.app.AlertDialog;
+import android.content.Context;
 import android.graphics.Color;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -155,14 +159,29 @@ public class RecipeViewModel extends RecyclerView.Adapter<RecipeViewModel.Recipe
     }
 
     private static void addMissingIngredientsToShoppingList(Map<String,
-            Integer> missingIngredients) {
+            Integer> missingIngredients, Context context) {
         if (missingIngredients == null) {
             return;
         }
 
         for (Map.Entry<String, Integer> entry : missingIngredients.entrySet()) {
-            ingredientViewModel.addIngredientToShoppingList(USER_ID, new Ingredient(entry.getKey(),
-                    entry.getValue(), 1, null));
+            // References: https://stackoverflow.com/questions/10903754/input-text-dialog-android
+            // https://developer.android.com/develop/ui/views/components/dialogs#PassingEvents
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle("How many calories per serving is " + entry.getKey() + "?");
+            EditText caloriesInput = new EditText(context);
+            caloriesInput.setInputType(InputType.TYPE_CLASS_NUMBER);
+            builder.setView(caloriesInput);
+
+            builder.setPositiveButton("Save", (dialog, which) ->
+                    ingredientViewModel.addIngredientToShoppingList(USER_ID,
+                            new Ingredient(entry.getKey(), entry.getValue(),
+                            Integer.parseInt(caloriesInput.getText().toString()),
+                            null)));
+
+            builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+            builder.show();
         }
     }
 
@@ -270,7 +289,7 @@ public class RecipeViewModel extends RecyclerView.Adapter<RecipeViewModel.Recipe
                             "An error occurred",
                             Toast.LENGTH_SHORT).show();
                 } else {
-                    addMissingIngredientsToShoppingList(missingIngredients);
+                    addMissingIngredientsToShoppingList(missingIngredients, v.getContext());
                 }
             });
         }
