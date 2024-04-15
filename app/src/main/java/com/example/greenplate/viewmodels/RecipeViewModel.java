@@ -183,6 +183,9 @@ public class RecipeViewModel extends RecyclerView.Adapter<RecipeViewModel.Recipe
             builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
             builder.show();
         }
+
+        Toast.makeText(context, "Missing ingredients added to shopping list",
+                Toast.LENGTH_SHORT).show();
     }
 
     @NonNull
