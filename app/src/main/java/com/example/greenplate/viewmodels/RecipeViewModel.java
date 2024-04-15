@@ -35,8 +35,10 @@ public class RecipeViewModel extends RecyclerView.Adapter<RecipeViewModel.Recipe
         this.userPantry = userPantry;
         mDatabase = SingletonFirebase.getInstance().getDatabaseReference();
     }
-    private static boolean hasAllIngredients(Recipe recipe, Map<String, Integer> userPantry) {
+    public static boolean hasAllIngredients(Recipe recipe, Map<String, Integer> userPantry) {
         Map<String, Integer> requiredIngredients = recipe.getIngredientQuantities();
+        Log.d("Yahoo", recipe.getIngredientQuantities().toString());
+        Log.d("YahooRecipe", recipe.getTitle());
         if (requiredIngredients == null || userPantry == null) {
             // Log.d("RecipeViewModel", "One or more maps are null.");
             return false;
@@ -184,7 +186,6 @@ public class RecipeViewModel extends RecyclerView.Adapter<RecipeViewModel.Recipe
 
             recipeIngredientsTextView.setText("Ingredients: " + ingredientsBuilder.toString());
             recipeQuantityTextView.setText("Quantity: " + recipe.getQuantity());
-            recipeQuantityTextView.setText("Quantity: " + recipe.getQuantity());
 
 
             // if enough qty for ingredients in pantry -> green, else red
@@ -202,6 +203,7 @@ public class RecipeViewModel extends RecyclerView.Adapter<RecipeViewModel.Recipe
 
                     intent.putExtra("RECIPE_TITLE", recipe.getTitle());
                     intent.putExtra("RECIPE_QUANTITY", recipe.getQuantity());
+                    intent.putExtra("RECIPE_OBJECT", recipe);
                     intent.putStringArrayListExtra("RECIPE_INGREDIENTS",
                             new ArrayList<>(recipe.getIngredients()));
 
