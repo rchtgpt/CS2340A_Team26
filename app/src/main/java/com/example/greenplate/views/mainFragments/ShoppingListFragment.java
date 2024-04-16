@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.example.greenplate.R;
@@ -105,7 +106,7 @@ public class ShoppingListFragment extends Fragment {
         @Override
         public ShoppingListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View itemView = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.ingredient_item, parent, false);
+                    .inflate(R.layout.ingredient_shopping_list, parent, false);
             return new ShoppingListViewHolder(itemView);
         }
 
@@ -123,6 +124,9 @@ public class ShoppingListFragment extends Fragment {
         public void setIngredients(List<Ingredient> ingredients) {
             this.shoppingList = shoppingList;
         }
+        public List<Ingredient> getShoppingList() {
+            return shoppingList;
+        }
 
         public class ShoppingListViewHolder extends RecyclerView.ViewHolder {
             // Declare views
@@ -130,6 +134,7 @@ public class ShoppingListFragment extends Fragment {
             private TextView quantityTextView;
             private Button increaseButton;
             private Button decreaseButton;
+            private CheckBox checkBox;
             private IngredientViewModel ingredientViewModel = new IngredientViewModel();
 
             public ShoppingListViewHolder(@NonNull View itemView) {
@@ -139,7 +144,7 @@ public class ShoppingListFragment extends Fragment {
                 quantityTextView = itemView.findViewById(R.id.quantityTextView);
                 increaseButton = itemView.findViewById(R.id.increaseButton);
                 decreaseButton = itemView.findViewById(R.id.decreaseButton);
-
+                checkBox = itemView.findViewById(R.id.checkBoxItem);
                 // Set click listeners for increase and decrease buttons
                 increaseButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -163,12 +168,20 @@ public class ShoppingListFragment extends Fragment {
                         }
                     }
                 });
+                checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        Ingredient ingredient = shoppingList.get(position);
+                    }
+                });
             }
 
             public void bind(Ingredient ingredient) {
                 // Bind data to views
                 nameTextView.setText(ingredient.getName());
                 quantityTextView.setText(String.valueOf(ingredient.getQuantity()));
+                checkBox.setChecked(false);
+
             }
         }
     }
