@@ -142,6 +142,7 @@ public class RecipeViewModel extends RecyclerView.Adapter<RecipeViewModel.Recipe
                 intent.putExtra("RECIPE_QUANTITY", recipe.getQuantity());
                 intent.putStringArrayListExtra("RECIPE_INGREDIENTS",
                         new ArrayList<>(recipe.getIngredients()));
+                intent.putExtra("RECIPE_OBJECT", recipe);
 
                 v.getContext().startActivity(intent);
             }

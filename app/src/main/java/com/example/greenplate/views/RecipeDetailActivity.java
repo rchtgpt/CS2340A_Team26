@@ -60,31 +60,18 @@ public class RecipeDetailActivity extends AppCompatActivity {
         // Try to get the complete Recipe object from the intent
         if (getIntent().hasExtra("RECIPE_OBJECT")) {
             currentRecipe = (Recipe) getIntent().getSerializableExtra("RECIPE_OBJECT");
+            Log.d(TAG, currentRecipe.getTitle() + " " + currentRecipe.getIngredients() + " " + currentRecipe.getQuantity() + " " + currentRecipe.getIngredientQuantities());
             if (currentRecipe != null) {
                 Log.d(TAG, "Recipe received: " + currentRecipe.getTitle());
             } else {
                 Log.d(TAG, "Recipe object is null");
-            }
-        } else {
-            // Fallback to reconstructing the Recipe from individual parts if no complete Recipe object is found
-            String title = getIntent().getStringExtra("RECIPE_TITLE");
-            String quantity = getIntent().getStringExtra("RECIPE_QUANTITY");
-            List<String> ingredients = getIntent().getStringArrayListExtra("RECIPE_INGREDIENTS");
-            Map<String, Integer> ingredientQuantities = new HashMap<>(); // This needs to be correctly filled as per your application's logic
-
-            if (title != null && quantity != null && ingredients != null) {
-                currentRecipe = new Recipe(title, ingredients, quantity, ingredientQuantities);
-                Log.d(TAG, "Recipe reconstructed from parts.");
-//                Log.d(TAG, String.valueOf(currentRecipe.get));
-            } else {
-                Log.d(TAG, "Insufficient data to reconstruct recipe.");
             }
         }
 
         if (currentRecipe == null) {
             Log.d(TAG, "No Recipe Data Available");
             showMessage("Error: No recipe data found.");
-            finish();  // Optionally close the activity if there's no data
+            finish();
             return;
         }
 
@@ -117,7 +104,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
 
     private void cookRecipe(Recipe recipe) {
         // Check if we have all ingredients in the required quantities
-//        Log.d("Yahaan", "1234");
+        Log.d(TAG, "1234");
         if (!hasAllIngredients(recipe, userPantry)) {
             showMessage("Not enough ingredients to cook this recipe.");
             return;
@@ -128,7 +115,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
 
         // Create a CountDownLatch with the size of the ingredient quantities map
         CountDownLatch latch = new CountDownLatch(recipe.getIngredientQuantities().size());
-        Log.d("Yahaanoo", recipe.getIngredientQuantities().toString());
+        Log.d(TAG, recipe.getIngredientQuantities().toString());
 
 //        Log.d("Yahaan", "123");
 
