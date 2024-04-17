@@ -66,6 +66,7 @@ public class ShoppingListFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
         buyItemsButton = view.findViewById(R.id.buyItemsButton);
         RecyclerView ingredientRecyclerView = view.findViewById(R.id.shoppingListRecyclerView);
         ingredientRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
