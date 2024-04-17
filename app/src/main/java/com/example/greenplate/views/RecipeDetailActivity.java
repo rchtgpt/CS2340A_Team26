@@ -283,36 +283,8 @@ public class RecipeDetailActivity extends AppCompatActivity {
         calorieRef.setValue(totalCalories)
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "Calories updated successfully."))
                 .addOnFailureListener(e -> Log.e(TAG, "Error updating calories: " + e.getMessage()));
-    }
 
-    private void fetchIngredientDetails(String ingredientName, Consumer<Ingredient> callback) {
-        DatabaseReference ingredientRef = SingletonFirebase.getInstance().getDatabaseReference()
-                .child("ingredients").child(ingredientName);
-
-        ingredientRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    Ingredient ingredient = dataSnapshot.getValue(Ingredient.class);
-                    if (ingredient != null) {
-                        callback.accept(ingredient);
-                        Log.d(TAG, "Ingredient fetched: " + ingredient.getName());
-                    } else {
-                        Log.d(TAG, "Ingredient data not converted.");
-                        callback.accept(null);
-                    }
-                } else {
-                    Log.d(TAG, "Ingredient not found in Firebase.");
-                    callback.accept(null);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, "Failed to fetch ingredient details: " + databaseError.getMessage());
-                callback.accept(null);
-            }
-        });
+        showMessage("Recipe cooked successfully.");
     }
 
     private void showMessage(String message) {
