@@ -3,6 +3,7 @@ package com.example.greenplate.views;
 import static com.example.greenplate.viewmodels.RecipeViewModel.hasAllIngredients;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -24,6 +26,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
@@ -103,90 +107,117 @@ public class RecipeDetailActivity extends AppCompatActivity {
     private static final String TAG = "CookRecipeActivity";
 
     private void cookRecipe(Recipe recipe) {
-        // Check if we have all ingredients in the required quantities
-        Log.d(TAG, "1234");
-        if (!hasAllIngredients(recipe, userPantry)) {
-            showMessage("Not enough ingredients to cook this recipe.");
-            return;
-        }
+        new AsyncTask<Recipe, Void, Boolean>() {
+            private int totalCalories = 0;
 
-        // Initialize the totalCalories as an AtomicInteger to be able to modify it inside the ValueEventListener
-        AtomicInteger totalCalories = new AtomicInteger(0);
+            @Override
+            protected Boolean doInBackground(Recipe... recipes) {
+                Recipe recipe = recipes[0];
+                CountDownLatch latch = new CountDownLatch(recipe.getIngredientQuantities().size());
 
-        // Create a CountDownLatch with the size of the ingredient quantities map
-        CountDownLatch latch = new CountDownLatch(recipe.getIngredientQuantities().size());
-        Log.d(TAG, recipe.getIngredientQuantities().toString());
+                for (Map.Entry<String, Integer> entry : recipe.getIngredientQuantities().entrySet()) {
+                    String ingredientName = entry.getKey();
+                    int requiredQuantity = entry.getValue();
 
-//        Log.d("Yahaan", "123");
+                    // Fetch the actual caloriesPerServing from the pantry
+                    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                    DatabaseReference ingredientRef = SingletonFirebase.getInstance().getDatabaseReference()
+                            .child("users").child(userId).child("pantry").child(ingredientName);
 
-        for (Map.Entry<String, Integer> entry : recipe.getIngredientQuantities().entrySet()) {
-            Log.d("Yahaan", "123");
-            String ingredientName = entry.getKey();
-            int requiredQuantity = entry.getValue();
-
-            // Fetch the actual caloriesPerServing from the pantry
-            String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            Log.d("Ingredient name", ingredientName);
-            DatabaseReference ingredientRef = SingletonFirebase.getInstance().getDatabaseReference()
-                    .child("users").child(userId).child("pantry").child(ingredientName);
-
-
-            ingredientRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        Log.w(TAG, "PANTRIE " + ingredientName);
-                        Ingredient ingredient = dataSnapshot.getValue(Ingredient.class);
-                        if (ingredient != null) {
-                            // Multiply the calories per serving with the quantity required for the recipe
-                            int calories = ingredient.getCaloriesPerServing() * requiredQuantity;
-                            totalCalories.addAndGet(calories);
-
-                            // Update the pantry with the new quantity
-                            int newQuantity = userPantry.getOrDefault(ingredientName, 0) - requiredQuantity;
-                            userPantry.put(ingredientName, newQuantity); // Store the updated quantity in the map
-                            updateIngredientQuantityInPantry(ingredientName, newQuantity);
-                            Log.w(TAG, "FOUNDDDD" + ingredientName);
+                    ingredientRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                Ingredient ingredient = dataSnapshot.getValue(Ingredient.class);
+                                if (ingredient != null) {
+                                    int calories = ingredient.getCaloriesPerServing() * requiredQuantity;
+                                    totalCalories += calories;
+                                }
+                            }
+                            latch.countDown();
                         }
-                    } else {
-                        Log.w(TAG, "Ingredient not found in pantry: " + ingredientName);
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            latch.countDown();
+                        }
+                    });
+                }
+
+                try {
+                    latch.await();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+
+                return hasAllIngredients(recipe, userPantry);
+            }
+
+            @Override
+            protected void onPostExecute(Boolean result) {
+                super.onPostExecute(result);
+                if (result) {
+                    addRecipeToMealHistory(recipe);
+                    updateUserMeals(recipe.getTitle(), totalCalories);
+                    updateCalorieCount(totalCalories);
+                    for (Map.Entry<String, Integer> entry : recipe.getIngredientQuantities().entrySet()) {
+                        String ingredientName = entry.getKey();
+                        int requiredQuantity = entry.getValue();
+                        int currentQuantity = userPantry.getOrDefault(ingredientName, 0);
+                        int newQuantity = currentQuantity - requiredQuantity;
+
+                        if (newQuantity >= 0) {
+                            updateIngredientQuantityInPantry(ingredientName, newQuantity);
+                        } else {
+                            // Handle the case where there isn't enough of this ingredient
+                            Log.e(TAG, "Not enough " + ingredientName + " to cook the recipe.");
+                            // Potentially inform the user that there was not enough of an ingredient
+                            // This would be a good place to add code to inform the user via the UI.
+                        }
                     }
-                    latch.countDown(); // Decrement the count of the latch
+                } else {
+                    showMessage("Not enough ingredients to cook this recipe.");
                 }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Log.e(TAG, "Failed to fetch ingredient: " + ingredientName, databaseError.toException());
-                    latch.countDown(); // Decrement the count of the latch even on failure
-                }
-            });
-        }
-
-        // Wait for all data to be fetched
-        try {
-            latch.await(); // Wait for the latch to count down to zero
-            // Now all data is fetched, and you can proceed to update meal history and meals
-            addRecipeToMealHistory(recipe);
-            updateUserMeals(recipe.getTitle(), totalCalories.get());
-            updateCalorieCount(totalCalories.get());
-            showMessage("Recipe cooked successfully!");
-        } catch (InterruptedException e) {
-            Log.e(TAG, "Interrupted exception", e);
-            Thread.currentThread().interrupt();
-        }
+            }
+        }.execute(recipe);
     }
 
-    private void updateUserMeals(String recipeTitle, int calories) {
+
+    private void updateUserMeals(String recipeTitle, int additionalCalories) {
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-        DatabaseReference userMealsRef = SingletonFirebase.getInstance().getDatabaseReference()
-                .child("users").child(userId).child("meals").child(currentDate);
+        DatabaseReference recipeRef = SingletonFirebase.getInstance().getDatabaseReference()
+                .child("users").child(userId).child("meals").child(currentDate).child(recipeTitle);
 
-        // Remove push() to prevent generating a unique ID, set the value directly
-        userMealsRef.child(recipeTitle).setValue(calories)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "User meals updated successfully with title and calories."))
-                .addOnFailureListener(e -> Log.e(TAG, "Error updating user meals: " + e.getMessage()));
+        // Run a transaction to increment the calories
+        recipeRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                // Try to retrieve the current calorie count for the recipe
+                Integer currentCalories = mutableData.getValue(Integer.class);
+                if (currentCalories == null) {
+                    // If it's not there, this is the first time the recipe is being added for the day
+                    mutableData.setValue(additionalCalories);
+                } else {
+                    // If it is there, increment the calorie count
+                    mutableData.setValue(currentCalories + additionalCalories);
+                }
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, boolean committed, @Nullable DataSnapshot dataSnapshot) {
+                // Transaction completed
+                if (databaseError != null) {
+                    Log.e(TAG, "Firebase counter increment failed: " + databaseError.getMessage());
+                } else {
+                    Log.d(TAG, "Firebase counter increment succeeded.");
+                }
+            }
+        });
     }
+
 
 
 
