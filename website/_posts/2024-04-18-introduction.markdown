@@ -1,0 +1,9 @@
+---
+layout: post
+title:  "Introduction"
+date:   2024-04-17 16:41:42 -0400
+categories: jekyll update
+---
+![greenplate cover](https://private-user-images.githubusercontent.com/44428198/307643231-3ff39bdb-71ae-42ec-9b00-528dbf04c2d4.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MTMzODY0ODcsIm5iZiI6MTcxMzM4NjE4NywicGF0aCI6Ii80NDQyODE5OC8zMDc2NDMyMzEtM2ZmMzliZGItNzFhZS00MmVjLTliMDAtNTI4ZGJmMDRjMmQ0LnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDA0MTclMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwNDE3VDIwMzYyN1omWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWY4OWE2OTUyMTgzODRhYWJlYWY0NWViNzEzN2ZmYWIzYmVlOGYxMmI4ZjU3NWIxMDc4MjQzMTllNDRjYzdhY2MmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.tBYo8anAyHUI4kIYkyL4NVz1XoDWGaKQPtL-Y0lvZlU)
+
+GreenPlate is a sustainable food management app. The app's design focuses on reducing food waste and promoting efficient use of resources. The Food Tracker app allows users to track daily calorie intake, create recipes, manage ingredient quantities, and generate shopping lists.
