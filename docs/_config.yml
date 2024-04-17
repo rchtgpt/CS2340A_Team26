@@ -22,8 +22,8 @@ title: GreenPlate (Team 26) - CS 2340
 email: rachitg@gatech.edu
 description: >- # this means to ignore newlines until "baseurl:"
   This website was built for CS 2340 - Objects and Design at Georgia Tech in Spring 2024.
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
+baseurl: "/CS2340A_Team26" # the subpath of your site, e.g. /blog
+url: "https://rchtgpt.github.io/" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: rchtgpt
 github_username:  rchtgpt
 
