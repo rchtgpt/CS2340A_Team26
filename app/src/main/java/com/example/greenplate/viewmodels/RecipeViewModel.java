@@ -274,7 +274,7 @@ public class RecipeViewModel extends RecyclerView.Adapter<RecipeViewModel.Recipe
             RecipeComponent baseRecipe = new Recipe(recipe.getTitle(), recipe.getIngredients(), recipe.getQuantity(), recipe.getIngredientQuantities());
             RecipeComponent decoratedRecipe = new CalorieCountDecorator(baseRecipe);
             int totalCalories = ((CalorieCountDecorator) decoratedRecipe).getTotalCalories();
-            recipeCaloriesTextView.setText("Calories: " + totalCalories);
+            recipeCaloriesTextView.setText("Total Calories: " + totalCalories);
 
             // if enough qty for ingredients in pantry -> green, else red
             if (hasAllIngredients(recipe, userPantry)) {
