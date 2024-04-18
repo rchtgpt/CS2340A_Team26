@@ -16,7 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.widget.Toast;
 
+import com.example.greenplate.models.CalorieCountDecorator;
 import com.example.greenplate.models.Ingredient;
+import com.example.greenplate.models.RecipeComponent;
 import com.example.greenplate.models.RecipeSortStrategy;
 import com.example.greenplate.models.SingletonFirebase;
 import com.example.greenplate.views.RecipeDetailActivity;
@@ -49,6 +51,7 @@ public class RecipeViewModel extends RecyclerView.Adapter<RecipeViewModel.Recipe
         this.shoppingList = shoppingList;
         mDatabase = SingletonFirebase.getInstance().getDatabaseReference();
     }
+
     public static boolean hasAllIngredients(Recipe recipe, Map<String, Integer> userPantry) {
         Map<String, Integer> requiredIngredients = recipe.getIngredientQuantities();
         Log.d("Yahoo", recipe.getIngredientQuantities().toString());
@@ -73,6 +76,7 @@ public class RecipeViewModel extends RecyclerView.Adapter<RecipeViewModel.Recipe
     public RecipeViewModel() {
         // for testing
     }
+
     public RecipeViewModel(List<Recipe> recipeList) {
         this.recipeList = recipeList;
         mDatabase = SingletonFirebase.getInstance().getDatabaseReference();
@@ -98,7 +102,7 @@ public class RecipeViewModel extends RecyclerView.Adapter<RecipeViewModel.Recipe
     }
 
     public String[] handleRecipeInputData(String ingredients, String quantity,
-                                         String title, String ingredientQuantities) {
+                                          String title, String ingredientQuantities) {
         if (ingredients == null) {
             return new String[]{"false", "Ingredients are null"};
         } else if (quantity == null) {
@@ -181,8 +185,8 @@ public class RecipeViewModel extends RecyclerView.Adapter<RecipeViewModel.Recipe
             builder.setPositiveButton("Save", (dialog, which) -> {
                 ingredientViewModel.addIngredientToShoppingList(USER_ID,
                         new Ingredient(entry.getKey(), entry.getValue(),
-                        Integer.parseInt(caloriesInput.getText().toString()),
-                        null));
+                                Integer.parseInt(caloriesInput.getText().toString()),
+                                null));
                 counter.getAndDecrement();
                 if (counter.get() == 0) {
                     Toast.makeText(context, "Missing ingredients added to shopping list",
@@ -233,6 +237,7 @@ public class RecipeViewModel extends RecyclerView.Adapter<RecipeViewModel.Recipe
         private TextView recipeIngredientsTextView;
         private TextView recipeQuantityTextView;
         private Button missingIngredientsBtn;
+        private TextView recipeCaloriesTextView;
 
         RecipeViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -240,6 +245,7 @@ public class RecipeViewModel extends RecyclerView.Adapter<RecipeViewModel.Recipe
             recipeIngredientsTextView = itemView.findViewById(R.id.recipeIngredientsTV);
             recipeQuantityTextView = itemView.findViewById(R.id.recipeQuantityTV);
             missingIngredientsBtn = itemView.findViewById(R.id.missingIngredientsBtn);
+            recipeCaloriesTextView = itemView.findViewById(R.id.recipeCaloriesTV);
         }
 
         void bind(Recipe recipe, Map<String, Integer> userPantry) {
@@ -263,6 +269,12 @@ public class RecipeViewModel extends RecyclerView.Adapter<RecipeViewModel.Recipe
 
             recipeIngredientsTextView.setText("Ingredients: " + ingredientsBuilder.toString());
             recipeQuantityTextView.setText("Quantity: " + recipe.getQuantity());
+
+            // Calculate and set total calories for the recipe
+            RecipeComponent baseRecipe = new Recipe(recipe.getTitle(), recipe.getIngredients(), recipe.getQuantity(), recipe.getIngredientQuantities());
+            RecipeComponent decoratedRecipe = new CalorieCountDecorator(baseRecipe);
+            int totalCalories = ((CalorieCountDecorator) decoratedRecipe).getTotalCalories();
+            recipeCaloriesTextView.setText("Calories: " + totalCalories);
 
             // if enough qty for ingredients in pantry -> green, else red
             if (hasAllIngredients(recipe, userPantry)) {

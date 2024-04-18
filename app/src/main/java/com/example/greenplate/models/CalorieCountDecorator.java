@@ -41,6 +41,6 @@ public class CalorieCountDecorator implements RecipeDecorator {
                 totalCalories += ingredient.getCaloriesPerServing() * quantity;
             }
         }
-        return totalCalories;
+        return totalCalories * Integer.parseInt(decoratedRecipe.getQuantity());
     }
 }
