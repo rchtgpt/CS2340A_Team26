@@ -1,13 +1,10 @@
 package com.example.greenplate.views;
 
-import static com.example.greenplate.viewmodels.RecipeViewModel.hasAllIngredients;
-
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,13 +12,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.example.greenplate.R;
 import com.example.greenplate.models.Ingredient;
 import com.example.greenplate.models.Recipe;
 import com.example.greenplate.models.SingletonFirebase;
-import com.example.greenplate.viewmodels.IngredientViewModel;
+import com.example.greenplate.models.RecipeComponent;
+import com.example.greenplate.models.CalorieCountDecorator;
+import com.example.greenplate.viewmodels.RecipeViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,8 +35,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
 
 public class RecipeDetailActivity extends AppCompatActivity {
 
@@ -64,7 +60,6 @@ public class RecipeDetailActivity extends AppCompatActivity {
         // Try to get the complete Recipe object from the intent
         if (getIntent().hasExtra("RECIPE_OBJECT")) {
             currentRecipe = (Recipe) getIntent().getSerializableExtra("RECIPE_OBJECT");
-            Log.d(TAG, currentRecipe.getTitle() + " " + currentRecipe.getIngredients() + " " + currentRecipe.getQuantity() + " " + currentRecipe.getIngredientQuantities());
             if (currentRecipe != null) {
                 Log.d(TAG, "Recipe received: " + currentRecipe.getTitle());
             } else {
@@ -103,8 +98,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
         quantityTextView.setText(recipe.getQuantity());
     }
 
-
-    private static final String TAG = "CookRecipeActivity";
+    private static final String TAG = "RecipeDetailActivity";
 
     private void cookRecipe(Recipe recipe) {
         new AsyncTask<Recipe, Void, Boolean>() {
@@ -150,31 +144,14 @@ public class RecipeDetailActivity extends AppCompatActivity {
                     Thread.currentThread().interrupt();
                 }
 
-                return hasAllIngredients(recipe, userPantry);
+                return RecipeViewModel.hasAllIngredients(recipe, userPantry);
             }
 
             @Override
             protected void onPostExecute(Boolean result) {
                 super.onPostExecute(result);
                 if (result) {
-                    addRecipeToMealHistory(recipe);
-                    updateUserMeals(recipe.getTitle(), totalCalories);
-                    updateCalorieCount(totalCalories);
-                    for (Map.Entry<String, Integer> entry : recipe.getIngredientQuantities().entrySet()) {
-                        String ingredientName = entry.getKey();
-                        int requiredQuantity = entry.getValue();
-                        int currentQuantity = userPantry.getOrDefault(ingredientName, 0);
-                        int newQuantity = currentQuantity - requiredQuantity;
-
-                        if (newQuantity >= 0) {
-                            updateIngredientQuantityInPantry(ingredientName, newQuantity);
-                        } else {
-                            // Handle the case where there isn't enough of this ingredient
-                            Log.e(TAG, "Not enough " + ingredientName + " to cook the recipe.");
-                            // Potentially inform the user that there was not enough of an ingredient
-                            // This would be a good place to add code to inform the user via the UI.
-                        }
-                    }
+                    // Add your implementation here
                 } else {
                     showMessage("Not enough ingredients to cook this recipe.");
                 }
@@ -182,71 +159,9 @@ public class RecipeDetailActivity extends AppCompatActivity {
         }.execute(recipe);
     }
 
-
-    private void updateUserMeals(String recipeTitle, int additionalCalories) {
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-        DatabaseReference recipeRef = SingletonFirebase.getInstance().getDatabaseReference()
-                .child("users").child(userId).child("meals").child(currentDate).child(recipeTitle);
-
-        // Run a transaction to increment the calories
-        recipeRef.runTransaction(new Transaction.Handler() {
-            @NonNull
-            @Override
-            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
-                // Try to retrieve the current calorie count for the recipe
-                Integer currentCalories = mutableData.getValue(Integer.class);
-                if (currentCalories == null) {
-                    // If it's not there, this is the first time the recipe is being added for the day
-                    mutableData.setValue(additionalCalories);
-                } else {
-                    // If it is there, increment the calorie count
-                    mutableData.setValue(currentCalories + additionalCalories);
-                }
-                return Transaction.success(mutableData);
-            }
-
-            @Override
-            public void onComplete(@Nullable DatabaseError databaseError, boolean committed, @Nullable DataSnapshot dataSnapshot) {
-                // Transaction completed
-                if (databaseError != null) {
-                    Log.e(TAG, "Firebase counter increment failed: " + databaseError.getMessage());
-                } else {
-                    Log.d(TAG, "Firebase counter increment succeeded.");
-                }
-            }
-        });
+    private void showMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
-
-
-
-
-// Helper methods (will need to be implemented)
-
-    private void updateIngredientQuantityInPantry(String ingredientName, int newQuantity) {
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference pantryRef = SingletonFirebase.getInstance().getDatabaseReference()
-                .child("users").child(userId).child("pantry").child(ingredientName).child("quantity");
-
-        pantryRef.setValue(newQuantity)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Pantry updated successfully for ingredient: " + ingredientName))
-                .addOnFailureListener(e -> Log.e(TAG, "Error updating pantry for ingredient: " + ingredientName + ": " + e.getMessage()));
-    }
-
-
-    private void addRecipeToMealHistory(Recipe recipe) {
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference mealHistoryRef = SingletonFirebase.getInstance().getDatabaseReference()
-                .child("users").child(userId).child("mealHistory");
-
-        String mealId = mealHistoryRef.push().getKey();
-        if (mealId != null) {
-            mealHistoryRef.child(mealId).setValue(recipe)
-                    .addOnSuccessListener(aVoid -> Log.d(TAG, "Meal history updated successfully."))
-                    .addOnFailureListener(e -> Log.e(TAG, "Error updating meal history: " + e.getMessage()));
-        }
-    }
-
 
     private void loadPantryData() {
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -272,24 +187,4 @@ public class RecipeDetailActivity extends AppCompatActivity {
             }
         });
     }
-
-
-
-    private void updateCalorieCount(int totalCalories) {
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference calorieRef = SingletonFirebase.getInstance().getDatabaseReference()
-                .child("users").child(userId).child("dailyCalories");
-
-        calorieRef.setValue(totalCalories)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Calories updated successfully."))
-                .addOnFailureListener(e -> Log.e(TAG, "Error updating calories: " + e.getMessage()));
-
-        showMessage("Recipe cooked successfully.");
-    }
-
-    private void showMessage(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
-
 }
