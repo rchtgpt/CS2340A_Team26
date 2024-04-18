@@ -24,16 +24,7 @@
         android:id="@+id/detailQuantityTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:layout_marginBottom="8dp" />
-
-    <TextView
-        android:id="@+id/detailCalorieTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:textColor="@android:color/darker_gray"
-        android:layout_marginBottom="8dp" />
+        android:textSize="18sp"/>
 
     <Button
         android:id="@+id/backButton"
