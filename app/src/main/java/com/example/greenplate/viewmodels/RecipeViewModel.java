@@ -271,7 +271,8 @@ public class RecipeViewModel extends RecyclerView.Adapter<RecipeViewModel.Recipe
             recipeQuantityTextView.setText("Quantity: " + recipe.getQuantity());
 
             // Calculate and set total calories for the recipe
-            RecipeComponent baseRecipe = new Recipe(recipe.getTitle(), recipe.getIngredients(), recipe.getQuantity(), recipe.getIngredientQuantities());
+            RecipeComponent baseRecipe = new Recipe(recipe.getTitle(), recipe.getIngredients(),
+                    recipe.getQuantity(), recipe.getIngredientQuantities());
             RecipeComponent decoratedRecipe = new CalorieCountDecorator(baseRecipe);
             int totalCalories = ((CalorieCountDecorator) decoratedRecipe).getTotalCalories();
             recipeCaloriesTextView.setText("Total Calories: " + totalCalories);
