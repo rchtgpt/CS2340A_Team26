@@ -13,5 +13,3 @@ categories: jekyll update
 <img width="450" alt="input meal" src="https://media.discordapp.net/attachments/1230957597931339969/1230958158894334056/input_meal.png?ex=6635361f&is=6622c11f&hm=5dba365bb1e25690e18efbb2b009f7feca00c0670618fdc7f7620f515ed30c7a&=&format=webp&quality=lossless&width=546&height=982">
 
 <img width="450" alt="shopping list" src="https://media.discordapp.net/attachments/1230957597931339969/1230958158596276334/shopping_list.png?ex=6635361f&is=6622c11f&hm=f23f4c1d3d2df49cbe48bd608131a5fa95ef92bd1b6198542b57bbde9a8070fc&=&format=webp&quality=lossless&width=546&height=982">
-
-
