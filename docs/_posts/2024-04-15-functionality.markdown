@@ -27,3 +27,4 @@ categories: jekyll update
 2. Recipe and Pantry Synchronization: Deducts ingredients automatically when a recipe is selected. <br>
 3. Recipe and Shopping List Synchronization: Missing ingredients can be added to the shopping list. <br>
 4. Shopping List Database and Screen Functionality: Manages items added by users and suggests items based on pantry needs. <br>
+
